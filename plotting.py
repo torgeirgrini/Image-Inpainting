@@ -162,7 +162,8 @@ from tensorflow.keras.models import load_model
 # Load the model from the .h5 file
 custom_objects = {'dice_coef': dice_coef}
 
-model = load_model('models/impaint_coco3232_epch'+str(n_epochs)+'.h5', custom_objects=custom_objects)
+model5 = load_model('models/impaint_coco3232_epch'+str(n_epochs)+'.h5', custom_objects=custom_objects)
+model10 = load_model('models/impaint_coco3232_epch'+str(10)+'.h5', custom_objects=custom_objects)
 
 import pickle
 with open('models/history_epch'+str(n_epochs)+'.pickle', 'rb') as f:
@@ -175,14 +176,14 @@ plt.plot(history['val_loss'])
 plt.title('Model loss')
 plt.ylabel('Loss')
 plt.xlabel('Epoch')
-plt.legend(['Train', 'Validation'], loc='upper left')
+plt.legend(['Train', 'Validation'])
 plt.show()
 
 
-
+#%%
 im = sample_images[0]
 plt.imshow(im)
-impainted_image = model.predict(im.reshape((1,)+im.shape))
+impainted_image = model5.predict(im.reshape((1,)+im.shape))
 
 plt.imshow(impainted_image.reshape(impainted_image.shape[1:]))
 plt.show()
@@ -197,7 +198,7 @@ for i, idx in enumerate(sample_idx):
 #   sample_images, sample_labels = traingen[idx]
 #   img_idx = np.random.randint(0, len(sample_images)-1, 1)[0]
   img_idx=i
-  impainted_image = model.predict(sample_images[img_idx].reshape((1,)+sample_images[img_idx].shape))
+  impainted_image = model5.predict(sample_images[img_idx].reshape((1,)+sample_images[img_idx].shape))
   axs[i][0].imshow(sample_labels[img_idx])
   axs[i][1].imshow(sample_images[img_idx])
   axs[i][2].imshow(impainted_image.reshape(impainted_image.shape[1:]))
@@ -206,5 +207,45 @@ for i, idx in enumerate(sample_idx):
   axs[i][2].axis('off')  
 plt.show()
 # fig.savefig("results_epch5.png",bbox_inches='tight')
+
+#%%
+
+rows = 8
+ncols = 3
+sample_idx = np.random.randint(0, len(testgen), rows)
+
+k = 2
+
+fig, axs = plt.subplots(nrows=ncols, ncols=rows, figsize=(rows*2, ncols*2))
+
+# add labels to the left of the images
+fig.text(0.105, 0.78, 'Original', va='center', rotation='vertical', fontsize=12, fontweight='bold')
+fig.text(0.105, 0.50, 'Input', va='center', rotation='vertical', fontsize=12, fontweight='bold')
+fig.text(0.105, 0.24, 'Output', va='center', rotation='vertical', fontsize=12, fontweight='bold')
+# fig.text(0.105, 0., 'Output 10', va='center', rotation='vertical', fontsize=12, fontweight='bold')
+
+# add labels to the top of the columns
+# for i in range(rows):
+#     axs[0][i].set_title(f"Sample {i}", fontsize=12)
+
+for i, idx in enumerate(sample_idx):
+#   sample_images, sample_labels = traingen[idx]
+#   img_idx = np.random.randint(0, len(sample_images)-1, 1)[0]
+  img_idx=i
+  impainted_image5 = model5.predict(sample_images[img_idx].reshape((1,)+sample_images[img_idx].shape))
+  impainted_image10 = model10.predict(sample_images[img_idx].reshape((1,)+sample_images[img_idx].shape))
+  axs[0][i].imshow(sample_labels[img_idx])
+  axs[1][i].imshow(sample_images[img_idx])
+#   axs[2][i].imshow(impainted_image5.reshape(impainted_image.shape[1:]))
+  axs[2][i].imshow(impainted_image10.reshape(impainted_image.shape[1:]))
+  axs[0][i].axis('off')
+  axs[1][i].axis('off')
+  axs[2][i].axis('off')
+#   axs[3][i].axis('off')
+
+# plt.subplots_adjust(left=0.1, right=0.9, top=0.9, bottom=0.1, wspace=0.1, hspace=0.1)
+fig.savefig("figs/results_epch" + str(n_epochs) + "rows" + str(rows) + ".png",bbox_inches='tight')
+
+plt.show()
 
 #%%
