@@ -3,6 +3,7 @@
 import tensorflow as tf
 print(tf.__version__)
 from tensorflow import keras
+from tensorflow.keras.models import load_model
 
 import os
 import cv2
@@ -156,8 +157,6 @@ def dice_coef(y_true, y_pred):
 #%%
 
 keras.backend.clear_session()
-
-from tensorflow.keras.models import load_model
 
 # Load the model from the .h5 file
 custom_objects = {'dice_coef': dice_coef}
